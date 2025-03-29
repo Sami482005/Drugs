@@ -1,4 +1,4 @@
-# Welcome to Our Drug Design Project ![Drug Picture](./assets/drug.jpg)
+# Welcome to Our Drug Design Project <img src='assets/medicon.jpg' width=40>
 ## Objectives:
 - [ ] Create a menu page where users can upload mol files, sdf files, or directories of mol files
 - [ ] Calculate the Topological Indeces.
