@@ -8,7 +8,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
-import Control.Indeces_Calculation as IC
 
 class FileUploaderApp:
     # Initializing the elements of the main page
@@ -66,28 +65,7 @@ class FileUploaderApp:
             self.selected_label.config(text=f"Selected directory: {os.path.basename(dir_path)}", fg="green")
             self.execute_selected_functions_for_dir(dir_path) # Calculate the indeces chosen on the mol files in the selected directory
     
-    # Function to execute the selected functions on the uploaded file or directory
-    # This function will be called when the user clicks the "Go" button
-    def execute_selected_functions(self, file_path):
-        if self.edge_var.get():
-            IC.getEdgeDensity(file_path)
-        if self.weiner_var.get():
-            IC.getWeinerIndex(file_path)
-        if self.petitjean_var.get():
-            IC.getPetitjeanIndex(file_path)
     
-    # Function to execute the selected functions on all mol files in the uploaded directory
-    # This function will be called when the user clicks the "Go" button
-    def execute_selected_functions_for_dir(self, dir_path):
-        for filename in os.listdir(dir_path):
-            if filename.endswith(".mol"):
-                file_path = os.path.join(dir_path, filename)
-                if self.edge_var.get():
-                    IC.getEdgeDensity(file_path)
-                if self.weiner_var.get():
-                    IC.getWeinerIndex(file_path)
-                if self.petitjean_var.get():
-                    IC.getPetitjeanIndex(file_path)
 
     # Function to move to the next page
     # Checks that the user has chosen at least one index and uploaded a file or directory
