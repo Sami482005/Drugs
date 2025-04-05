@@ -3,7 +3,7 @@ from rdkit.Chem import Draw
 import sys
 from PIL import Image, ImageDraw, ImageFont
 import os
-import Control.Indeces_Calculation as IC
+import Indeces_Calculation as IC
 
 def draw_molecules(file_path):
     molecules = []

@@ -37,14 +37,3 @@ def getPetitjeanIndex(file_path):
     petitjean_index = 0.0
     # Implement the logic to read the file and calculate Petitjean index
     return petitjean_index
-
-def get_indices(file_path):
-    """
-    Get the indices of the molecule.
-    
-    Returns:
-    - indices: A list containing the calculated indices.
-    """
-    # Placeholder for actual indices retrieval
-    indices = [getEdgeDensity(file_path), getWeinerIndex(file_path), getPetitjeanIndex(file_path)]
-    return indices

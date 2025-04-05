@@ -6,82 +6,81 @@ include an additional next page button that will display the results of the next
 import tkinter as tk
 from tkinter import Label, Button
 from PIL import Image, ImageTk
-import control.Indeces_Calculation as IC
-import control.Reading_chem_files as RF
+import os
+import Indeces_Calculation as IC
+import Reading_chem_files as RF
 
 class ResultsFrame(tk.Frame):
-    def __init__(self, parent, controller, get_image, get_data):
+    def __init__(self, parent, controller, file_path, selected_indices):
         super().__init__(parent)
         self.controller = controller
-        
-        self.controller.title("Results")
+        self.file_path = file_path  # Store the file path
+        self.selected_indices = selected_indices  # Store selected indices
+
+        self.controller.title("Mol File Results")
         self.controller.geometry("700x700")
-        Label(self, text="Results", font=("Times New Roman", 16, "bold")).pack(pady=10)
-        
+
+        Label(self, text="Processing MOL File...", font=("Times New Roman", 18, "bold")).pack(pady=10)
+
         # Image display
         self.image_label = Label(self)
         self.image_label.pack()
-        
-        # Image name
+
+        # Molecule name
         self.molecule_name_label = Label(self, text="", font=("Times New Roman", 12))
         self.molecule_name_label.pack(pady=5)
-        
+
         # Indices labels
         self.petitjean_label = Label(self, text="PetitJean: ")
         self.petitjean_label.pack()
-        
+
         self.weiner_label = Label(self, text="Weiner: ")
         self.weiner_label.pack()
-        
+
         self.edge_density_label = Label(self, text="Edge Density: ")
         self.edge_density_label.pack()
-        
+
         # Back button
         Button(self, text="Back", command=self.go_back).pack(pady=20, side="left", anchor="sw")
 
+        # Load results after initialization
+        self.load_results()
 
-    # To get the data to fill out the labels    
+    # Loads and displays the results for the selected file.
     def load_results(self):
-        image_path = RF.get_image_path()
-        molecule_name = RF.get_molecule_name()
-        indices = IC.get_indices()
         
-        if image_path:
+        # Get molecule image and name
+        image_path = RF.get_image(self.file_path)
+        molecule_name = RF.get_molecule_name(self.file_path)
+
+        # Compute indices based on selection
+        indices = self.calculate_indices(self.file_path)
+
+        # Display image if available
+        if image_path and os.path.exists(image_path):
             img = Image.open(image_path)
             img = img.resize((200, 200), Image.Resampling.LANCZOS)
             img_tk = ImageTk.PhotoImage(img)
             self.image_label.config(image=img_tk)
             self.image_label.image = img_tk
-        
-        self.molecule_name_label.config(text=molecule_name)
-        self.petitjean_label.config(text=f"PetitJean: {indices[0]}")
-        self.weiner_label.config(text=f"Weiner: {indices[1]}")
-        self.edge_density_label.config(text=f"Edge Density: {indices[2]}")
-    
+
+        # Update molecule name and indices
+        self.molecule_name_label.config(text=f"Molecule: {molecule_name}")
+        self.petitjean_label.config(text=f"PetitJean: {indices.get('Petitjean', 'N/A')}")
+        self.weiner_label.config(text=f"Weiner: {indices.get('Weiner', 'N/A')}")
+        self.edge_density_label.config(text=f"Edge Density: {indices.get('EdgeDensity', 'N/A')}")
+
+    def calculate_indices(self, file_path):
+        # Calculates the selected indices and returns a dictionary with results.
+        results = {}
+        if "Edge Density" in self.selected_indices:
+            results["EdgeDensity"] = IC.getEdgeDensity(file_path)
+        if "Weiner Index" in self.selected_indices:
+            results["Weiner"] = IC.getWeinerIndex(file_path)
+        if "Petitjean Index" in self.selected_indices:
+            results["Petitjean"] = IC.getPetitjeanIndex(file_path)
+        return results
+
     def go_back(self):
+        # Handles navigation back to the previous frame
         self.controller.show_previous_frame()
-
-
-
-    # Function to execute the selected functions on the uploaded file or directory
-    # This function will be called when the user clicks the "Go" button
-    def execute_selected_functions(self, file_path):
-        if self.edge_var.get():
-            IC.getEdgeDensity(file_path)
-        if self.weiner_var.get():
-            IC.getWeinerIndex(file_path)
-        if self.petitjean_var.get():
-            IC.getPetitjeanIndex(file_path)
-    
-    # Function to execute the selected functions on all mol files in the uploaded directory
-    # This function will be called when the user clicks the "Go" button
-    def execute_selected_functions_for_dir(self, dir_path):
-        for filename in os.listdir(dir_path):
-            if filename.endswith(".mol"):
-                file_path = os.path.join(dir_path, filename)
-                if self.edge_var.get():
-                    IC.getEdgeDensity(file_path)
-                if self.weiner_var.get():
-                    IC.getWeinerIndex(file_path)
-                if self.petitjean_var.get():
-                    IC.getPetitjeanIndex(file_path)
