@@ -81,28 +81,25 @@ class FileUploaderApp(tk.Frame):
         frame = multi_file.SDFDirFrame(self, self, self.selected_path, self.selected_indices)
         self.show_frame(frame)
 
-    #def show_previous_frame(self):
-        """Show the previous frame."""
-        #if len(self.frames) > 1:
-            # Pop the current frame
-           # self.current_frame.grid_forget()
+    def show_previous_frame(self):
+        # Show the previous frame
+        if len(self.frames) > 1:
+            # Remove the current frame from the stack
+            current_frame = self.frames.pop()
+            current_frame.pack_forget()  # Hide the current frame
 
-            # Pop from the stack to get the previous frame
-            #self.frames.pop()
-
-            # Set the current frame to the previous one and display it
-           # self.current_frame = self.frames[-1]
-           # self.current_frame.grid(row=0, column=0, sticky="nsew")
+            # Show the previous frame
+            previous_frame = self.frames[-1]
+            previous_frame.pack(fill="both", expand=True)
+        else:
+            messagebox.showinfo("Info", "No previous frame to show.")
 
     def show_frame(self, frame):
-        # Remove the current frame
+        # Push the current frame onto the stack
         if self.frames:
-            self.frames[-1].pack_forget()
-
-        # Add the new frame to the stack and show it
-        self.frames.append(frame)
-        frame.pack(fill="both", expand=True)
-        self.current_frame = frame
+            self.frames[-1].pack_forget()  # Hide the current frame
+        self.frames.append(frame)  # Add the new frame to the stack
+        frame.pack(fill="both", expand=True)  # Show the new frame
         
 if __name__ == "__main__":
     root = tk.Tk()  # Create the main Tkinter window

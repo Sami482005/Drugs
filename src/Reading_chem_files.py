@@ -67,6 +67,8 @@ def get_molecule_matrices(mol):
     return {
         "adjacency": adj_matrix,
         "distance": dist_matrix,
+        "num_atoms": mol.GetNumAtoms(),
+        "mol": mol
     }
 
 def loading_sdf_files(file_path):
