@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
 
+import mol_view
+import multi_file
 
 class FileUploaderApp:
     def __init__(self, root):
@@ -80,7 +82,7 @@ class FileUploaderApp:
                 self.selected_indices.append("Weiner Index")
             if self.petitjean_var.get():
                 self.selected_indices.append("Petitjean Index")
-            results_frame = mol_view(self.root, self, self.selected_path, self.selected_indices)
+            results_frame = mol_view.ResultsFrame(self.root, self.root, self.selected_path, self.selected_indices)
             self.show_frame(results_frame)
         else:
             if self.edge_var.get():
@@ -89,7 +91,8 @@ class FileUploaderApp:
                 self.selected_indices.append("Weiner Index")
             if self.petitjean_var.get():
                 self.selected_indices.append("Petitjean Index")
-            mol = Results_Frame(self.root, self.selected_path, self.selected_indices)  # Open SDF/Directory processing frame
+            results_frame = multi_file.SDFDirFrame(self.root, self.root, self.selected_path, self.selected_indices)  # Open SDF/Directory processing frame
+            self.show_frame(results_frame)
 
 if __name__ == "__main__":
     root = tk.Tk()

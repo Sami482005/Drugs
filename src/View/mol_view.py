@@ -50,7 +50,7 @@ class ResultsFrame(tk.Frame):
     def load_results(self):
         
         # Get molecule image and name
-        image_path = RF.get_image(self.file_path)
+        image_path = RF.draw_molecule_image(self.file_path)
         molecule_name = RF.get_molecule_name(self.file_path)
 
         # Compute indices based on selection
