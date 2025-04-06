@@ -14,8 +14,8 @@ class ResultsFrame(tk.Frame):
     def __init__(self, parent, controller, file_path, selected_indices):
         super().__init__(parent)
         self.controller = controller
-        self.file_path = file_path  # Store the file path
-        self.selected_indices = selected_indices  # Store selected indices
+        self.file_path = file_path  
+        self.selected_indices = selected_indices  
 
         self.controller.title("Mol File Results")
         self.controller.geometry("700x700")
@@ -54,9 +54,8 @@ class ResultsFrame(tk.Frame):
         molecule_name = RF.get_molecule_name(self.file_path)
 
         # Compute indices based on selection
-        indices = self.calculate_indices(self.file_path)
+        indices = self.calculate_indices()
 
-        # Display image if available
         if image_path and os.path.exists(image_path):
             img = Image.open(image_path)
             img = img.resize((200, 200), Image.Resampling.LANCZOS)
@@ -70,15 +69,15 @@ class ResultsFrame(tk.Frame):
         self.weiner_label.config(text=f"Weiner: {indices.get('Weiner', 'N/A')}")
         self.edge_density_label.config(text=f"Edge Density: {indices.get('EdgeDensity', 'N/A')}")
 
-    def calculate_indices(self, file_path):
+    def calculate_indices(self):
         # Calculates the selected indices and returns a dictionary with results.
         results = {}
         if "Edge Density" in self.selected_indices:
-            results["EdgeDensity"] = IC.getEdgeDensity(file_path)
+            results["EdgeDensity"] = IC.getEdgeDensity(self.file_path)
         if "Weiner Index" in self.selected_indices:
-            results["Weiner"] = IC.getWeinerIndex(file_path)
+            results["Weiner"] = IC.getWeinerIndex(self.file_path)
         if "Petitjean Index" in self.selected_indices:
-            results["Petitjean"] = IC.getPetitjeanIndex(file_path)
+            results["Petitjean"] = IC.getPetitjeanIndex(self.file_path)
         return results
 
     def go_back(self):
