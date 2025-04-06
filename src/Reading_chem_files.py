@@ -28,7 +28,7 @@ def draw_molecule_image(file_path=None, mol=None):
     
     name = mol.GetProp('_Name') if mol.HasProp('_Name') else "Unknown Molecule"
     # Save the image to a file
-    output_path="data/images"
+    output_path="images"
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     output_path = os.path.join("images", f"{name}.png")
@@ -43,7 +43,7 @@ def draw_molecule_image(file_path=None, mol=None):
     draw = ImageDraw.Draw(new_img)
     font = ImageFont.load_default()
     draw.text((10, img_height + 5), f"{name}", fill="black", font=font)
-
+    new_img.save(output_path)
     # mol is a RDKit molecule object
     return output_path, name, mol
 

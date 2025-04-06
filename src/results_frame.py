@@ -20,7 +20,7 @@ class ResultsFrame(tk.Frame):
 
         # Use the controller to set the title and geometry
         self.controller.parent.title("Mol File Results")
-        self.controller.parent.geometry("700x700")
+        self.controller.parent.geometry("700x800")
 
         # Image display
         self.image_label = Label(self)
@@ -41,8 +41,7 @@ class ResultsFrame(tk.Frame):
         self.edge_density_label.pack()
 
         # Back button
-        #Button(self, text="Back", command=self.go_back()).pack(pady=20, side="left", anchor="sw")
-
+        Button(self, text="Back", command=self.go_back).pack(pady=20, side="left", anchor="sw")
         # Load results after initialization
         self.load_results()
 
@@ -57,7 +56,7 @@ class ResultsFrame(tk.Frame):
 
         if image_path and os.path.exists(image_path):
             img = Image.open(image_path)
-            img = img.resize((200, 200), Image.Resampling.LANCZOS)
+            img = img.resize((500, 500), Image.Resampling.LANCZOS)
             img_tk = ImageTk.PhotoImage(img)
             self.image_label.config(image=img_tk)
             self.image_label.image = img_tk
@@ -79,6 +78,6 @@ class ResultsFrame(tk.Frame):
             results["Petitjean"] = IC.getPetitjeanIndex(mol)
         return results
 
-    #def go_back(self):
+    def go_back(self):
         # Handles navigation back to the previous frame
-       # self.controller.show_previous_frame()
+        self.controller.show_previous_frame()

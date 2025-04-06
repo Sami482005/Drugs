@@ -95,11 +95,13 @@ class FileUploaderApp(tk.Frame):
             messagebox.showinfo("Info", "No previous frame to show.")
 
     def show_frame(self, frame):
-        # Push the current frame onto the stack
+        # Hide the current frame
         if self.frames:
-            self.frames[-1].pack_forget()  # Hide the current frame
-        self.frames.append(frame)  # Add the new frame to the stack
-        frame.pack(fill="both", expand=True)  # Show the new frame
+            old_frame = self.frames.pop()
+            old_frame.destroy()  # Destroy the old frame
+        # Add the new frame to the stack and display it
+        self.frames.append(frame)
+        frame.pack(fill="both", expand=True)
         
 if __name__ == "__main__":
     root = tk.Tk()  # Create the main Tkinter window
