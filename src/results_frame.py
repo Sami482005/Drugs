@@ -10,6 +10,7 @@ import os
 import Indeces_Calculation as IC
 import Reading_chem_files as RF
 
+
 class ResultsFrame(tk.Frame):
     def __init__(self, parent, controller, file_path, selected_indices):
         super().__init__(parent)
@@ -17,10 +18,9 @@ class ResultsFrame(tk.Frame):
         self.file_path = file_path  
         self.selected_indices = selected_indices  
 
-        self.controller.title("Mol File Results")
-        self.controller.geometry("700x700")
-
-        Label(self, text="Processing MOL File...", font=("Times New Roman", 18, "bold")).pack(pady=10)
+        # Use the controller to set the title and geometry
+        self.controller.parent.title("Mol File Results")
+        self.controller.parent.geometry("700x700")
 
         # Image display
         self.image_label = Label(self)
@@ -41,7 +41,7 @@ class ResultsFrame(tk.Frame):
         self.edge_density_label.pack()
 
         # Back button
-        Button(self, text="Back", command=self.go_back).pack(pady=20, side="left", anchor="sw")
+        #Button(self, text="Back", command=self.go_back()).pack(pady=20, side="left", anchor="sw")
 
         # Load results after initialization
         self.load_results()
@@ -50,11 +50,10 @@ class ResultsFrame(tk.Frame):
     def load_results(self):
         
         # Get molecule image and name
-        image_path = RF.draw_molecule_image(self.file_path)
-        molecule_name = RF.get_molecule_name(self.file_path)
+        image_path, molecule_name, mol = RF.draw_molecule_image(self.file_path, None)
 
         # Compute indices based on selection
-        indices = self.calculate_indices()
+        indices = self.calculate_indices(mol)
 
         if image_path and os.path.exists(image_path):
             img = Image.open(image_path)
@@ -69,17 +68,17 @@ class ResultsFrame(tk.Frame):
         self.weiner_label.config(text=f"Weiner: {indices.get('Weiner', 'N/A')}")
         self.edge_density_label.config(text=f"Edge Density: {indices.get('EdgeDensity', 'N/A')}")
 
-    def calculate_indices(self):
+    def calculate_indices(self, mol):
         # Calculates the selected indices and returns a dictionary with results.
         results = {}
         if "Edge Density" in self.selected_indices:
-            results["EdgeDensity"] = IC.getEdgeDensity(self.file_path)
+            results["EdgeDensity"] = IC.getEdgeDensity(mol)
         if "Weiner Index" in self.selected_indices:
-            results["Weiner"] = IC.getWeinerIndex(self.file_path)
+            results["Weiner"] = IC.getWeinerIndex(mol)
         if "Petitjean Index" in self.selected_indices:
-            results["Petitjean"] = IC.getPetitjeanIndex(self.file_path)
+            results["Petitjean"] = IC.getPetitjeanIndex(mol)
         return results
 
-    def go_back(self):
+    #def go_back(self):
         # Handles navigation back to the previous frame
-        self.controller.show_previous_frame()
+       # self.controller.show_previous_frame()

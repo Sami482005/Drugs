@@ -12,12 +12,15 @@ import results_frame
 import multi_file
 
 class FileUploaderApp(tk.Frame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
-        self.title("Indices Calculator")
-        self.geometry("500x500")
+    def __init__(self, parent):
+        super().__init__(parent)  # Pass the parent to the superclass
+        self.parent = parent
+        self.parent.title("Indices Calculator")
+        self.parent.geometry("500x500")
 
+        self.frames = []  # Stack to keep track of frames
+
+        # Add a welcome label
         tk.Label(self, text="Welcome to the Indices Calculator", fg="blue", font=("Times New Roman", 24)).pack(pady=10)
 
         # Allow the user to select which indices they want to calculate
@@ -27,7 +30,6 @@ class FileUploaderApp(tk.Frame):
 
         checkbox_frame = tk.Frame(self)
         checkbox_frame.pack(pady=5)
-
         tk.Checkbutton(checkbox_frame, text="Edge Density", variable=self.edge_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
         tk.Checkbutton(checkbox_frame, text="Weiner Index", variable=self.weiner_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
         tk.Checkbutton(checkbox_frame, text="Petitjean", variable=self.petitjean_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
@@ -35,6 +37,7 @@ class FileUploaderApp(tk.Frame):
         tk.Button(self, text="Upload sdf or mol file", font=("Times New Roman", 18), command=self.upload_file).pack(pady=5)
         tk.Button(self, text="Upload Directory of mol files", font=("Times New Roman", 18), command=self.upload_directory).pack(pady=5)
 
+        # By default, always tell the user that no file or directory is selected
         self.selected_label = tk.Label(self, text="No file or directory selected", fg="red", font=("Times New Roman", 20))
         self.selected_label.pack(pady=5)
 
@@ -63,20 +66,46 @@ class FileUploaderApp(tk.Frame):
             messagebox.showerror("Error", "Please upload a file or directory first.")
             return
 
-        # Decide which frame to open based on the uploaded file type.
+        # Load the indices selected by the user
         self.selected_indices = []
         if self.edge_var.get(): self.selected_indices.append("Edge Density")
         if self.weiner_var.get(): self.selected_indices.append("Weiner Index")
         if self.petitjean_var.get(): self.selected_indices.append("Petitjean Index")
         
-        if os.path.endswith(self.selected_path, (".mol")):
-            frame = results_frame.ResultsFrame(self.container, self, self.selected_path, self.selected_indices)
+        # There are two frames we prepared. one for only 1 molecule (mol file) and one for multiple molecules
+        # (sdf file or directory of mol files)
+        if self.selected_path.endswith(".mol"):
+            frame = results_frame.ResultsFrame(self, self, self.selected_path, self.selected_indices)
             self.show_frame(frame)
             return
-        frame = multi_file.SDFDirFrame(self.container, self, self.selected_path, self.selected_indices)
+        frame = multi_file.SDFDirFrame(self, self, self.selected_path, self.selected_indices)
         self.show_frame(frame)
 
+    #def show_previous_frame(self):
+        """Show the previous frame."""
+        #if len(self.frames) > 1:
+            # Pop the current frame
+           # self.current_frame.grid_forget()
 
+            # Pop from the stack to get the previous frame
+            #self.frames.pop()
+
+            # Set the current frame to the previous one and display it
+           # self.current_frame = self.frames[-1]
+           # self.current_frame.grid(row=0, column=0, sticky="nsew")
+
+    def show_frame(self, frame):
+        # Remove the current frame
+        if self.frames:
+            self.frames[-1].pack_forget()
+
+        # Add the new frame to the stack and show it
+        self.frames.append(frame)
+        frame.pack(fill="both", expand=True)
+        self.current_frame = frame
+        
 if __name__ == "__main__":
-    app = FileUploaderApp()
-    app.mainloop()
+    root = tk.Tk()  # Create the main Tkinter window
+    app = FileUploaderApp(root)  # Pass the root as parent
+    app.pack(fill="both", expand=True)
+    root.mainloop()  # Start the Tkinter event loop
