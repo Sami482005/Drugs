@@ -14,6 +14,24 @@ import Reading_chem_files as RF
 class ResultsFrame(tk.Frame):
     def __init__(self, parent, controller, file_path, selected_indices):
         super().__init__(parent)
+
+        canvas = tk.Canvas(self, borderwidth=0)
+        scrollbar = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = tk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        super().__init__(parent)
         self.controller = controller
         self.file_path = file_path  
         self.selected_indices = selected_indices  
@@ -40,8 +58,6 @@ class ResultsFrame(tk.Frame):
         self.edge_density_label = Label(self, text="Edge Density: ")
         self.edge_density_label.pack()
 
-        # Back button
-        Button(self, text="Back", command=self.go_back).pack(pady=20, side="left", anchor="sw")
         # Load results after initialization
         self.load_results()
 
@@ -77,7 +93,3 @@ class ResultsFrame(tk.Frame):
         if "Petitjean Index" in self.selected_indices:
             results["Petitjean"] = IC.getPetitjeanIndex(mol)
         return results
-
-    def go_back(self):
-        # Handles navigation back to the previous frame
-        self.controller.show_previous_frame()

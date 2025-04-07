@@ -1,9 +1,8 @@
 from rdkit import Chem
 from rdkit.Chem import Draw
-from rdkit.Chem import rdmolops
 from PIL import Image, ImageDraw, ImageFont
-import numpy as np
 import os
+import numpy as np
 
 '''
 This is the file that will allow me to read the mol files.
@@ -51,8 +50,8 @@ def draw_molecule_image(file_path=None, mol=None):
 def get_molecule_matrices(mol):
     """
     Returns a dictionary containing:
-    - adjacency matrix (NumPy array)
-    - distance matrix (NumPy array)
+    - adjacency matrix
+    - distance matrix
     - number of atoms
     - RDKit molecule object
     """
@@ -61,8 +60,8 @@ def get_molecule_matrices(mol):
         return None
 
     # Generate adjacency and distance matrices
-    adj_matrix = np.array(rdmolops.GetAdjacencyMatrix(mol))
-    dist_matrix = np.array(rdmolops.GetDistanceMatrix(mol))
+    adj_matrix = np.array(GetAdjacencyMatrix(mol))
+    dist_matrix = np.array(GetDistanceMatrix(mol))
 
     return {
         "adjacency": adj_matrix,
@@ -70,6 +69,60 @@ def get_molecule_matrices(mol):
         "num_atoms": mol.GetNumAtoms(),
         "mol": mol
     }
+def GetDistanceMatrix(mol):
+    num_atoms = mol.GetNumAtoms()
+
+    # Step 1: Build adjacency list from bonds
+    adjacency = {i: [] for i in range(num_atoms)}
+    for bond in mol.GetBonds():
+        i = bond.GetBeginAtomIdx()
+        j = bond.GetEndAtomIdx()
+        adjacency[i].append(j)
+        adjacency[j].append(i)
+
+    # Step 2: Initialize the distance matrix
+    distance_matrix = [[0 if i == j else -1 for j in range(num_atoms)] for i in range(num_atoms)]
+
+    # Step 3: Perform BFS from each atom
+    for start in range(num_atoms):
+        visited = [False] * num_atoms
+        queue = [(start, 0)]
+        visited[start] = True
+
+        while queue:
+            current, dist = queue.pop(0)
+            distance_matrix[start][current] = dist
+
+            for neighbor in adjacency[current]:
+                if not visited[neighbor]:
+                    visited[neighbor] = True
+                    queue.append((neighbor, dist + 1))
+
+    return distance_matrix
+
+
+def GetAdjacencyMatrix(mol):
+    num_atoms = mol.GetNumAtoms()
+
+    # Initialize an empty adjacency matrix
+    adj_matrix = [[0 for _ in range(num_atoms)] for _ in range(num_atoms)]
+
+    for bond in mol.GetBonds():
+        i = bond.GetBeginAtomIdx()
+        j = bond.GetEndAtomIdx()
+        adj_matrix[i][j] = 1
+        adj_matrix[j][i] = 1  # Undirected graph
+
+    return adj_matrix
+
+
+def get_bonds_from_adjacency(num_atoms, adjacency_matrix):
+    bonds = []
+    for i in range(num_atoms):
+        for j in range(i + 1, num_atoms):  # Avoid duplicates
+            if adjacency_matrix[i][j] == 1:
+                bonds.append((i, j))
+    return bonds
 
 def loading_sdf_files(file_path):
     # Load SDF files and return a list of RDKit molecule objects.
