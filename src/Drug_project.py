@@ -4,8 +4,7 @@ import numpy as np  # Matrices + Arrays
 import tkinter as tk
 from tkinter import filedialog, messagebox, Label
 from rdkit import Chem
-from rdkit.Chem import SDMolSupplier
-from rdkit.Chem import Draw
+from rdkit.Chem import SDMolSupplier, Draw
 from PIL import ImageTk
 '''
 This code was written by Sami Saliby and Mayssam Eid.
@@ -34,7 +33,7 @@ def load_molecules(file_path):
             # Reads all molecules from the .sdf file
             for i, mol in enumerate(read_mols_from_sdf(file_path)):
                 if mol:  # Ensures that the molecule is valid
-                    mols.append((f"Molecule_{i+1}", mol))  
+                    mols.append((f"Molecule_{i+1}", mol))  # would add the mol files to the list so that you can loop through it later
 
     # If the path is a directory (containing multiple .mol files)
     elif os.path.isdir(file_path):
@@ -78,19 +77,16 @@ def mol_to_nx(mol):
 
     return G 
 
-
 def read_mols_from_sdf(file_path):
     
    # Reads multiple molecules from an .sdf file.
     suppl = SDMolSupplier(file_path)  # Uses RDKit's SDMolSupplier to read molecules from the .sdf file
     return [mol for mol in suppl if mol is not None]  # Returns a list of valid molecules
 
-
 def read_mol_from_file(file_path):
     #Reads a single molecule from a .mol file using RDKit.
 
     return Chem.MolFromMolFile(file_path)  # Uses RDKit's Chem.MolFromMolFile to read a single molecule
-
 
 def get_molecule_matrices(mol):
     """
@@ -101,10 +97,10 @@ def get_molecule_matrices(mol):
     """
     G = mol_to_nx(mol)  # Converts the molecule to a NetworkX graph
     num_atoms = G.number_of_nodes()  # Gets the number of atoms (nodes) in the graph
-    adj_matrix = nx.to_numpy_array(G, dtype=int)  # Converts the graph to an adjacency matrix (a matrix of bonds)
+    adj_matrix =  nx.to_numpy_array(G, dtype=int)  # Converts the graph to an adjacency matrix (a matrix of bonds)
 
     # Calculates shortest path lengths between all pairs of atoms using NetworkX
-    length_dict = dict(nx.all_pairs_shortest_path_length(G))
+    length_dict = all_pairs_shortest_path_length(G)
     dist_matrix = np.zeros((num_atoms, num_atoms), dtype=int)  # Initializes an empty distance matrix
 
     # Loop through all atom pairs (i, j) and populates the distance matrix with the shortest path lengths.
@@ -119,6 +115,25 @@ def get_molecule_matrices(mol):
         "graph": G
     }
 
+def all_pairs_shortest_path_length(graph):
+    """
+    We chose to use Dijkstra's algorithm for calculating all-pairs shortest path lengths.
+    Dijkstra’s algorithm is efficient for calculating the shortest path from a single source node
+   to all other nodes in the graph.
+   
+    By running Dijkstra's algorithm for each node in the graph, we can compute the shortest path
+    between all pairs of nodes, which is required for calculating molecular descriptors like the Wiener Index.
+ 
+    """
+    length_dict = {}  # Initializing an empty dictionary to store shortest path lengths
+    
+    # Looping over each node in the graph as the source
+    for source in graph.nodes():
+        # Using Dijkstra's algorithm to compute the shortest path lengths from the source node
+        lengths = nx.single_source_shortest_path_length(graph, source)
+        length_dict[source] = lengths  # Store the distances in the dictionary
+    
+    return length_dict
 
 def getEdgeDensity(mol):
     """
@@ -135,7 +150,6 @@ def getEdgeDensity(mol):
     max_edges = num_atoms * (num_atoms - 1) / 2  # Maximum possible number of edges
 
     return round(num_edges / max_edges, 4)  # Returns the edge density rounded to 4 decimal places
-
 
 def getWeinerIndex(mol):
     """
@@ -157,7 +171,6 @@ def getWeinerIndex(mol):
 
     return wiener_index 
 
-
 def getPetitjeanIndex(mol):
     """
     Calculating the Petitjean index of a molecule.
@@ -177,7 +190,6 @@ def getPetitjeanIndex(mol):
     R = min(eccentricities)
 
     return round((D - R) / R, 4)  # Returns the Petitjean index rounded to 4 decimal places
-
 
 def LongestShortest_paths(matrix):
     """
@@ -307,7 +319,6 @@ class FileUploaderApp(tk.Frame):
         self.frames.append(frame)
         frame.pack(fill="both", expand=True)
 
-
 class ResultsFrame(tk.Frame):
     """
     This class creates a frame that displays the results after processing the uploaded molecules.
@@ -337,12 +348,11 @@ class ResultsFrame(tk.Frame):
 
         molecules = load_molecules(file_path)
         for name, mol in molecules:
-            G = mol_to_nx(mol)  # Convert molecule to graph
             # Displays the results for each molecule
-            self.display_molecule_results(scrollable_frame, name, G, mol)
+            self.display_molecule_results(scrollable_frame, name, mol)
 
 
-    def display_molecule_results(self, frame, name, G, mol):
+    def display_molecule_results(self, frame, name, mol):
         """
         Display the results for each molecule: image, name, and calculated indices.
         """
@@ -391,7 +401,6 @@ class ResultsFrame(tk.Frame):
         except Exception as e:
             print(f"Error calculating indices for molecule: {e}")  # Prints error if calculation fails
         return results 
-
 
 # Create the Tkinter main window and run the application
 if __name__ == "__main__":
