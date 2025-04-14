@@ -7,7 +7,10 @@ from rdkit import Chem
 from rdkit.Chem import SDMolSupplier
 from rdkit.Chem import Draw
 from PIL import ImageTk
-
+'''
+This code was written by Sami Saliby and Mayssam Eid.
+We hope you find it useful!
+'''
 def load_molecules(file_path):
     """
     This function loads molecules from a given file or directory. It can handle:
