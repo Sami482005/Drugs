@@ -209,11 +209,11 @@ class FileUploaderApp(tk.Frame):
         super().__init__(parent)
         self.parent = parent
         self.parent.title("Indices Calculator")
-        self.parent.geometry("500x500")
+        self.parent.geometry("600x600")
         self.frames = []
         self.selected_path = None
         
-        tk.Label(self, text="Welcome to the Indices Calculator", fg="blue", font=("Times New Roman", 24)).pack(pady=10)
+        tk.Label(self, text="Welcome to the Indices Calculator", fg="blue", font=("Times New Roman", 12)).pack(pady=10)
         self.edge_var = tk.BooleanVar()
         self.weiner_var = tk.BooleanVar()
         self.petitjean_var = tk.BooleanVar()
@@ -221,19 +221,19 @@ class FileUploaderApp(tk.Frame):
 
         checkbox_frame = tk.Frame(self)
         checkbox_frame.pack(pady=5)
-        tk.Checkbutton(checkbox_frame, text="Edge Density", variable=self.edge_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
-        tk.Checkbutton(checkbox_frame, text="Weiner Index", variable=self.weiner_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
-        tk.Checkbutton(checkbox_frame, text="Petitjean", variable=self.petitjean_var, font=("Times New Roman", 20)).pack(side=tk.LEFT, padx=5)
+        tk.Checkbutton(checkbox_frame, text="Edge Density", variable=self.edge_var, font=("Times New Roman", 12)).pack(side=tk.LEFT, padx=5)
+        tk.Checkbutton(checkbox_frame, text="Weiner Index", variable=self.weiner_var, font=("Times New Roman", 12)).pack(side=tk.LEFT, padx=5)
+        tk.Checkbutton(checkbox_frame, text="Petitjean", variable=self.petitjean_var, font=("Times New Roman", 12)).pack(side=tk.LEFT, padx=5)
 
         # Buttons for uploading files or directories
-        tk.Button(self, text="Upload sdf or mol file", font=("Times New Roman", 18), command=self.upload_file).pack(pady=5)
-        tk.Button(self, text="Upload Directory of mol files", font=("Times New Roman", 18), command=self.upload_directory).pack(pady=5)
+        tk.Button(self, text="Upload sdf or mol file", font=("Times New Roman", 12), command=self.upload_file).pack(pady=5)
+        tk.Button(self, text="Upload Directory of mol files", font=("Times New Roman", 12), command=self.upload_directory).pack(pady=5)
 
 
-        self.selected_label = tk.Label(self, text="No file or directory selected", fg="red", font=("Times New Roman", 20))
+        self.selected_label = tk.Label(self, text="No file or directory selected", fg="red", font=("Times New Roman", 12))
         self.selected_label.pack(pady=5)
 
-        tk.Button(self, text="Go", font=("Times New Roman", 20), command=self.open_correct_frame).pack(side=tk.RIGHT, padx=10, pady=10)
+        tk.Button(self, text="Go", font=("Times New Roman", 12), command=self.open_correct_frame).pack(side=tk.RIGHT, padx=10, pady=10)
 
 
     def upload_file(self):
@@ -247,7 +247,7 @@ class FileUploaderApp(tk.Frame):
         if file_path:  
             self.selected_path = file_path  # Stores the selected file path
             # Updates the label to show the selected file's name
-            self.selected_label.config(text=f"Selected file: {os.path.basename(file_path)}", fg="green", font=("Times New Roman", 18))
+            self.selected_label.config(text=f"Selected file: {os.path.basename(file_path)}", fg="green", font=("Times New Roman", 16))
 
 
     def upload_directory(self):
@@ -261,7 +261,7 @@ class FileUploaderApp(tk.Frame):
         if dir_path:  
             self.selected_path = dir_path  # Stores the selected directory path
             # Updates the label to show the selected directory's name
-            self.selected_label.config(text=f"Selected directory: {os.path.basename(dir_path)}", fg="green", font=("Times New Roman", 18))
+            self.selected_label.config(text=f"Selected directory: {os.path.basename(dir_path)}", fg="green", font=("Times New Roman", 16))
 
 
     def open_correct_frame(self):
@@ -322,7 +322,7 @@ class ResultsFrame(tk.Frame):
         self.file_path = file_path
         self.selected_indices = selected_indices
         self.controller.parent.title("Mol File Results")  # Change window title
-        self.controller.parent.geometry("700x800")  # Resize the window
+        self.controller.parent.geometry("600x600")  # Resize the window
 
         # Creates a canvas with a scrollbar for displaying results
         canvas = tk.Canvas(self)
